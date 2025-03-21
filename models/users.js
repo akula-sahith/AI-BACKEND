@@ -1,6 +1,4 @@
-
 import mongoose from "mongoose";
->>>>>>> cdcc5b9c784724c836fa50429d7e814881a291ca
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
