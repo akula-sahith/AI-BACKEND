@@ -42,7 +42,7 @@ app.post("/resumeAnalysis",async (req, res) => {
 
 app.get("/users/email/:email", async (req, res) => {
     try {
-        const user = await User.findOne({ email: req.params.email });
+        const user = await User.findOne({ email: req.params.email }).select("-password");
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
@@ -51,6 +51,7 @@ app.get("/users/email/:email", async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+
 
 
 
