@@ -36,19 +36,6 @@ app.post("/createAccount", async (req, res) => {
     }
 });
 
-// Resume Analysis Endpoint
-app.post("/atsAnalyzer", upload.fields([{ name: 'resume' }, { name: 'jobDescription' }]), async (req, res) => {
-    try {
-        const resumeBuffer = req.files['resume'][0].buffer;
-        const jobDescriptionBuffer = req.files['jobDescription'][0].buffer;
-
-        const analysisResult = await analyzeATS(resumeBuffer, jobDescriptionBuffer);
-        res.status(200).json(analysisResult);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
-
 // Get User by Email
 app.get("/users/email/:email", async (req, res) => {
     try {
@@ -74,6 +61,7 @@ app.post("/apply",async(req, res) => {
         console.error("Error occurred while applying : " + error)
     }
 })
+
 
 
 
