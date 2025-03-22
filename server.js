@@ -1,31 +1,31 @@
 import mongoose from "mongoose";
 import express from "express";
+import multer from "multer";
 import { User } from "./models/users.js";
-import cors from "cors";  // Import CORS
+import { analyzeATS } from "./atsAnalyzer.js";
+import cors from "cors";
+
 const app = express();
 const port = 3000;
 app.use(cors());
+
 // Connect to MongoDB
-// mongoose.connect("mongodb://127.0.0.1:27017/SahithAkula", {
-//     useNewUrlParser: true,
-//     useUnifiedTopology: true
-// }).then(() => {
-//     console.log("✅ Connected to MongoDB");
-// }).catch(err => {
-//     console.error("❌ MongoDB connection error:", err);
-// });
+await mongoose.connect("mongodb://127.0.0.1:27017/SahithAkula");
 
-let a = await mongoose.connect("mongodb://127.0.0.1:27017/SahithAkula")
+// Middleware
+app.use(express.json());
 
-// Middleware (optional)
-app.use(express.json()); // For parsing JSON request bodies
+// Configure Multer for File Upload
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
 // Routes
 app.get("/", async (req, res) => {
-    res.send("Hello World")
+    res.send("Hello World");
 });
 
-app.post("/createAccount",async (req,res)=>{
+// Create Account
+app.post("/createAccount", async (req, res) => {
     try {
         const user = new User(req.body);
         await user.save();
@@ -33,13 +33,22 @@ app.post("/createAccount",async (req,res)=>{
     } catch (error) {
         res.status(400).send(error.message);
     }
-})
+});
 
-app.post("/resumeAnalysis",async (req, res) => {
+// Resume Analysis Endpoint
+app.post("/atsAnalyzer", upload.fields([{ name: 'resume' }, { name: 'jobDescription' }]), async (req, res) => {
+    try {
+        const resumeBuffer = req.files['resume'][0].buffer;
+        const jobDescriptionBuffer = req.files['jobDescription'][0].buffer;
 
-    
-})
+        const analysisResult = await analyzeATS(resumeBuffer, jobDescriptionBuffer);
+        res.status(200).json(analysisResult);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
 
+// Get User by Email
 app.get("/users/email/:email", async (req, res) => {
     try {
         const user = await User.findOne({ email: req.params.email }).select("name email");
@@ -51,12 +60,6 @@ app.get("/users/email/:email", async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
-
-
-
-
-
-
 
 // Start the Server
 app.listen(port, () => {
