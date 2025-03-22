@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import express from "express";
 import multer from "multer";
+import axios from "axios";
 import { User } from "./models/users.js";
 import { analyzeATS } from "./atsAnalyzer.js";
 import cors from "cors";
@@ -60,6 +61,25 @@ app.get("/users/email/:email", async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+
+app.post("/apply",async(req, res) => {
+    try{
+        const application = req.body
+        console.log("Started applying : " + application)
+        let response = await axios.post('http://127.0.0.1:5000/oneclickapply', application)
+        console.log("Application Status : " + response.data)
+        res.status(200).json(response.data)
+    }catch (error) {
+        res.status(500).json({ error: error.message });
+        console.error("Error occurred while applying : " + error)
+    }
+})
+
+
+
+
+
+
 
 // Start the Server
 app.listen(port, () => {
