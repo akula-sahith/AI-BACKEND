@@ -9,6 +9,8 @@ const userSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
+
+
 // Automatically exclude password in all responses
 userSchema.methods.toJSON = function() {
   const userObject = this.toObject();
